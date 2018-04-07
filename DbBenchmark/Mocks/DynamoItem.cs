@@ -16,5 +16,10 @@ namespace DbBenchmark.Mocks
         public string Column7 { get; set; }
         public string Column8 { get; set; }
         public string Column9 { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Id},{Column1},{Column2},{Column3},{Column4},{Column5},{Column6},{Column7},{Column8},{Column9}";
+        }
     }
 }

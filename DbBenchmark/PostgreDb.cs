@@ -39,24 +39,22 @@ namespace DbBenchmark
             try
             {
                 await _connection.OpenAsync();
-                var writer = _connection.BeginBinaryImport($"COPY {_tablename} (id,column1,column2,column3,column4,column5,column6,column7,column8,column9) FROM STDIN (FORMAT BINARY)");
-                using (writer)
+                foreach (var item in items)
                 {
-                    foreach (var item in items)
-                    {
-                        writer.WriteRow(
-                            item.Id,
-                            item.Column1,
-                            item.Column2,
-                            item.Column3,
-                            item.Column4,
-                            item.Column5,
-                            item.Column6,
-                            item.Column7,
-                            item.Column8,
-                            item.Column9
-                        );
-                    }
+                    NpgsqlCommand cmd = _connection.CreateCommand();
+                    cmd.CommandText = $"INSERT INTO {_tablename} (id,column1,column2,column3,column4,column5,column6,column7,column8,column9) VALUES " +
+                        $"(:id,:column1,:column2,:column3,:column4,:column5,:column6,:column7,:column8,:column9)";
+                    cmd.Parameters.Add(new NpgsqlParameter(":id", item.Id));
+                    cmd.Parameters.Add(new NpgsqlParameter(":column1", item.Column1));
+                    cmd.Parameters.Add(new NpgsqlParameter(":column2", item.Column2));
+                    cmd.Parameters.Add(new NpgsqlParameter(":column3", item.Column3));
+                    cmd.Parameters.Add(new NpgsqlParameter(":column4", item.Column4));
+                    cmd.Parameters.Add(new NpgsqlParameter(":column5", item.Column5));
+                    cmd.Parameters.Add(new NpgsqlParameter(":column6", item.Column6));
+                    cmd.Parameters.Add(new NpgsqlParameter(":column7", item.Column7));
+                    cmd.Parameters.Add(new NpgsqlParameter(":column8", item.Column8));
+                    cmd.Parameters.Add(new NpgsqlParameter(":column9", item.Column9));
+                    cmd.ExecuteNonQuery();
                 }
                 _connection.Close();
             }
@@ -75,6 +73,38 @@ namespace DbBenchmark
                 {
                     var cmd = new NpgsqlCommand($"SELECT * FROM {_tablename} WHERE id = {item.Id}", _connection);
                     cmd.ExecuteScalar();
+                }
+                _connection.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"ERROR - {e.Message}");
+            }
+        }
+
+        public async Task WriteBulk(List<Item> items)
+        {
+            try
+            {
+                await _connection.OpenAsync();
+                var writer = _connection.BeginBinaryImport($"COPY {_tablename} (id,column1,column2,column3,column4,column5,column6,column7,column8,column9) FROM STDIN (FORMAT BINARY)");
+                using (writer)
+                {
+                    foreach (var item in items)
+                    {
+                        writer.WriteRow(
+                            item.Id,
+                            item.Column1,
+                            item.Column2,
+                            item.Column3,
+                            item.Column4,
+                            item.Column5,
+                            item.Column6,
+                            item.Column7,
+                            item.Column8,
+                            item.Column9
+                        );
+                    }
                 }
                 _connection.Close();
             }

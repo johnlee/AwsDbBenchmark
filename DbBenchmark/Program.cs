@@ -63,7 +63,11 @@ namespace DbBenchmark
                         var dynId = configs.FirstOrDefault(x => x.Key == "AccessId").Value;
                         var dynKey = configs.FirstOrDefault(x => x.Key == "SecretKey").Value;
                         var dynTableName = configs.FirstOrDefault(x => x.Key == "TableName").Value;
-                        DynamoDb dynDb = new DynamoDb(dynTableName, dynId, dynKey);
+                        var dynCapcity = configs.FirstOrDefault(x => x.Key == "Capacity").GetChildren();
+                        var dynSize = Convert.ToInt32(dynCapcity.FirstOrDefault(x => x.Key == "Size").Value);
+                        var dynWrite = Convert.ToInt32(dynCapcity.FirstOrDefault(x => x.Key == "Write").Value);
+                        var dynRead = Convert.ToInt32(dynCapcity.FirstOrDefault(x => x.Key == "Read").Value);
+                        DynamoDb dynDb = new DynamoDb(dynTableName, dynId, dynKey, dynSize, dynWrite, dynRead);
                         RunBenchmark(database.Key, dynDb);
                         break;
                     default:
@@ -99,7 +103,7 @@ namespace DbBenchmark
 
             Console.Write($"Reading data".PadRight(20, '.'));
             watch.Start();
-            database.Read(_mockDataRead).Wait();
+            //database.Read(_mockDataRead).Wait();
             watch.Stop();
             Console.WriteLine($"Completed! Time: {watch.Elapsed.TotalSeconds}");
             watch.Reset();
