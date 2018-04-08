@@ -115,7 +115,7 @@ namespace DbBenchmark
                     index += chunkSize;
                     chunk = dynamoItems.GetRange(index, chunkSize);
                     retryCount = 0;
-                    retryWait = 1;
+                    retryWait = 1000;
                 }
                 catch (ProvisionedThroughputExceededException)
                 {
@@ -123,7 +123,7 @@ namespace DbBenchmark
                     {
                         retryCount++;
                         retryWait = retryWait * 2;
-                        Console.WriteLine($"  {DateTime.Now}: ERROR! Exceeded write capcity. At chunk: {index} Retry count at: {retryCount} Retrying in: {retryWait / 1000} seconds");
+                        Console.WriteLine($"  {DateTime.Now}: ERROR! Exceeded write capcity. At chunk: {index} Retry count at: {retryCount} Retrying in: {retryWait} ms");
                         System.Threading.Thread.Sleep(retryWait);
                     }
                     else

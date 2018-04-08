@@ -103,7 +103,7 @@ namespace DbBenchmark
 
             Console.Write($"Reading data".PadRight(20, '.'));
             watch.Start();
-            //database.Read(_mockDataRead).Wait();
+            database.Read(_mockDataRead).Wait();
             watch.Stop();
             Console.WriteLine($"Completed! Time: {watch.Elapsed.TotalSeconds}");
             watch.Reset();
